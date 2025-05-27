@@ -9,11 +9,6 @@ const port = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
-//user:job_admin
-//pass:WioutooIyeH4AdHM
-
-// const uri = "mongodb+srv://job_admin:WioutooIyeH4AdHM@learningproject.3djrvwy.mongodb.net/?retryWrites=true&w=majority&appName=learningProject";
-
 const uri = process.env.MONGODB_URI;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -31,6 +26,13 @@ async function run() {
     await client.connect();
      
     const jobsCollection = client.db('CareerCode').collection('jobs');
+
+    //jobs api
+    app.get('/jobs', async(req, res) => {
+      const cursor = jobsCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
     
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
