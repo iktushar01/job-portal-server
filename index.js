@@ -26,11 +26,23 @@ async function run() {
     await client.connect();
 
     const jobsCollection = client.db("CareerCode").collection("jobs");
+    const applicationsCollection = client
+      .db("CareerCode")
+      .collection("applications");
 
     //jobs api
     app.get("/jobs", async (req, res) => {
       const cursor = jobsCollection.find();
       const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    //job application related apis
+
+    app.post("/applications", async (req, res) => {
+      const application = req.body;
+      console.log(application)
+      const result = await applicationsCollection.insertOne(application);
       res.send(result);
     });
 
