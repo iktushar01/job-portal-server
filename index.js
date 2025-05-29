@@ -45,6 +45,15 @@ async function run() {
         email: email,
       };
       const result = await applicationsCollection.find(query).toArray();
+
+      // bad way to aggregate data
+      for(const application of result){
+        const jobId = application.jobId;
+        const jobQuery = {_id: new ObjectId(jobId)}
+        const job = await jobsCollection.findOne(jobQuery);
+        application.company = job.company
+        application.title = job.title
+      }
       res.send(result);
     });
 
