@@ -47,12 +47,12 @@ async function run() {
       const result = await applicationsCollection.find(query).toArray();
 
       // bad way to aggregate data
-      for(const application of result){
+      for (const application of result) {
         const jobId = application.jobId;
-        const jobQuery = {_id: new ObjectId(jobId)}
+        const jobQuery = { _id: new ObjectId(jobId) };
         const job = await jobsCollection.findOne(jobQuery);
-        application.company = job.company
-        application.title = job.title
+        application.company = job.company;
+        application.title = job.title;
       }
       res.send(result);
     });
@@ -68,6 +68,13 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await jobsCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.post("/jobs", async(req, res) => {
+      const newJob = req.body;
+      console.log(newJob);
+      const result = await jobsCollection.insertOne(newJob);
       res.send(result);
     });
 
