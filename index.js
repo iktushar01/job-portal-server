@@ -32,12 +32,10 @@ async function run() {
 
     //jobs api
     app.get("/jobs", async (req, res) => {
-
       const email = req.query.email;
       const query = {};
       if (email) {
-            query.hr_email = email;
-            
+        query.hr_email = email;
       }
       const cursor = jobsCollection.find(query);
       const result = await cursor.toArray();
@@ -64,6 +62,13 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/application/job/:job_id", async (req, res) => {
+      const job_id = req.params.job_id;
+      const query = { jobId: job_id };
+      const result = await applicationsCollection.find(query).toArray(); // don't forget `.toArray()`
+      res.send(result);
+    });
+
     app.post("/applications", async (req, res) => {
       const application = req.body;
       console.log(application);
@@ -78,7 +83,7 @@ async function run() {
       res.send(result);
     });
 
-    app.post("/jobs", async(req, res) => {
+    app.post("/jobs", async (req, res) => {
       const newJob = req.body;
       console.log(newJob);
       const result = await jobsCollection.insertOne(newJob);
