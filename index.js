@@ -1,13 +1,26 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 4000;
 
 //middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    credentials: true,
+  })
+);
 app.use(express.json());
+app.use(cookieParser());
+
+const logger = (req , res ,  next) =>{
+  console.log('inside the logger middleware');
+  next();
+}
 
 const uri = process.env.MONGODB_URI;
 
@@ -30,6 +43,21 @@ async function run() {
       .db("CareerCode")
       .collection("applications");
 
+    //jwt token related api
+    app.post("/jwt", async (req, res) => {
+      const userData = req.body;
+      const token = jwt.sign(userData, process.env.JWT_ACCESS_SECRET, {
+        expiresIn: "30d",
+      });
+
+      //set token in the Cookie
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: false,
+      });
+      res.send({ success: true });
+    });
+
     //jobs api
     app.get("/jobs", async (req, res) => {
       const email = req.query.email;
@@ -44,8 +72,9 @@ async function run() {
 
     //job application related apis
 
-    app.get("/applications", async (req, res) => {
+    app.get("/applications", logger, async (req, res) => {
       const email = req.query.email;
+      // console.log('inside application api', req.cookies)
       const query = {
         email: email,
       };
