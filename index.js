@@ -22,6 +22,10 @@ const logger = (req , res ,  next) =>{
   next();
 }
 
+const verifyToken = (req, res , next) => {
+  console.log('inside the logger middleware', req.cookies);
+  next()
+}
 const uri = process.env.MONGODB_URI;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
